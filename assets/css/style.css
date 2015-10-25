@@ -1,0 +1,21 @@
+/* DOCUMENT SET UP */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.section {
+    width: 50%;
+    height: 100%;
+    margin: 0px auto;
+    overflow: hidden;
+    position: relative;
+		float:left;
+}
+
+#map {
+	width: 100%;
+  height: 100%;
+}

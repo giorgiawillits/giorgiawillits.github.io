@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUWv7h7IIugRHsyljp4EvervyKrVhwdPA&callback=initMap"
+        async defer></script>
+    <script src="assets/js/script.js"></script>
+  </head>
+  <body>
+    <div id="directions" class="section">
+    </div>
+    <div class="section">
+      <div id="floating-panel">
+        <b>Start: </b>
+        <select id="start" onchange="calculateAndDisplayRoute();">
+          <option value="current location">Current Location</option>
+          <option value="chicago, il">Chicago</option>
+          <option value="st louis, mo">St Louis</option>
+          <option value="joplin, mo">Joplin, MO</option>
+          <option value="oklahoma city, ok">Oklahoma City</option>
+          <option value="amarillo, tx">Amarillo</option>
+          <option value="gallup, nm">Gallup, NM</option>
+          <option value="flagstaff, az">Flagstaff, AZ</option>
+          <option value="winona, az">Winona</option>
+          <option value="kingman, az">Kingman</option>
+          <option value="barstow, ca">Barstow</option>
+          <option value="san bernardino, ca">San Bernardino</option>
+          <option value="los angeles, ca">Los Angeles</option>
+        </select>
+        <b>End: </b>
+        <select id="end" onchange="calculateAndDisplayRoute();">
+          <option value="chicago, il">Chicago</option>
+          <option value="st louis, mo">St Louis</option>
+          <option value="joplin, mo">Joplin, MO</option>
+          <option value="oklahoma city, ok">Oklahoma City</option>
+          <option value="amarillo, tx">Amarillo</option>
+          <option value="gallup, nm">Gallup, NM</option>
+          <option value="flagstaff, az">Flagstaff, AZ</option>
+          <option value="winona, az">Winona</option>
+          <option value="kingman, az">Kingman</option>
+          <option value="barstow, ca">Barstow</option>
+          <option value="san bernardino, ca">San Bernardino</option>
+          <option value="los angeles, ca">Los Angeles</option>
+        </select>
+      </div>
+      <div id="map"></div>
+    </div>
+  </body>
+</html>

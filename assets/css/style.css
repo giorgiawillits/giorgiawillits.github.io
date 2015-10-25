@@ -10,7 +10,7 @@ html, body {
     width: 50%;
     height: 100%;
     margin: 0px auto;
-    overflow: hidden;
+    overflow: scroll;
     position: relative;
 		float:left;
 }

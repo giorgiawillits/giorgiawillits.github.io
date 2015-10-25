@@ -19,8 +19,8 @@ function initMap() {
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
-      //infoWindow.setPosition(pos);
-      //infoWindow.setContent('Location found.');
+      infoWindow.setPosition(pos);
+      infoWindow.setContent('Location found.');
       map.setCenter(pos);
     }, function() {
       handleLocationError(true, infoWindow, map.getCenter());
@@ -45,12 +45,16 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 }
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+  var selectedMode = document.getElementById("travel-mode").value
   directionsService.route({
     origin: pos,
     destination: clickTime,
     //origin: document.getElementById('start').value,
     //destination: document.getElementById('end').value,
-    travelMode: google.maps.TravelMode.DRIVING
+    // Note that Javascript allows us to access the constant
+    // using square brackets and a string value as its
+    // "property."
+    travelMode: google.maps.TravelMode[selectedMode]
   }, function(response, status) {
     if (status === google.maps.DirectionsStatus.OK) {
       directionsDisplay.setDirections(response);
@@ -59,7 +63,6 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
     }
   });
 }
-
 
 
 

@@ -94,7 +94,6 @@ function addressToLocation(address, callback) {
 }
 
 function getCoffeeAndDonuts(locations){
-  console.log("getCoffeeAndDonuts");
   var requestCoffee = {
     location: locations[0],
     radius: '500',
@@ -108,12 +107,11 @@ function getCoffeeAndDonuts(locations){
     openNow: true
   };
   var placesService = new google.maps.places.PlacesService(map);
-  placesService.textSearch(requestCoffee, placeCoffeeMarkers);
-  placesService.textSearch(requestDonuts, placeDonutMarkers);
+  placesService.textSearch(requestCoffee, getCoffeeMatrix);
+  placesService.textSearch(requestDonuts, getDonutMatrix);
 }
 
-function placeCoffeeMarkers(results, status) {
-  console.log("placeCoffeeMarkers");
+function getCoffeeMatrix(results, status) {
   var coffeeOrigins = [];
   coffeeLocations = [];
   for (var i = 0; i < results.length; i++){
@@ -121,29 +119,17 @@ function placeCoffeeMarkers(results, status) {
     coffeeOrigins.push(results[i].geometry.location);
   }
   if (status == google.maps.places.PlacesServiceStatus.OK) {
-    // for (var i = 0; i < results.length; i++) {
-    //     var place = results[i];
-    //     var marker = new google.maps.Marker({
-    //       map: map,
-    //       icon: 'https://chart.googleapis.com/chart?' +
-    //           'chst=d_map_pin_letter&chld=C|FF0000|000000',
-    //       title: place.name,
-    //       position: place.geometry.location
-    //     });
-    // }
+    var matrixService = new google.maps.DistanceMatrixService();
+    matrixService.getDistanceMatrix(
+      {
+        origins: coffeeOrigins,
+        destinations: [clickTime],
+        travelMode: google.maps.TravelMode.WALKING,
+      }, getClosestCoffee);
   }
-  console.log("start CoffeeDistanceMatrixService");
-  var matrixService = new google.maps.DistanceMatrixService();
-  matrixService.getDistanceMatrix(
-    {
-      origins: coffeeOrigins,
-      destinations: [clickTime],
-      travelMode: google.maps.TravelMode.WALKING,
-    }, getClosestCoffee);
 }
 
-function placeDonutMarkers(results, status) {
-  console.log("placeDonutMarkers");
+function getDonutMatrix(results, status) {
   var donutOrigins = [];
   donutLocations = [];
   for (var i = 0; i < results.length; i++){
@@ -151,30 +137,17 @@ function placeDonutMarkers(results, status) {
     donutOrigins.push(results[i].geometry.location);
   }
   if (status == google.maps.places.PlacesServiceStatus.OK) {
-    // for (var i = 0; i < results.length; i++) {
-    //     var place = results[i];
-    //     var marker = new google.maps.Marker({
-    //       map: map,
-    //       icon: 'https://chart.googleapis.com/chart?' +
-    //           'chst=d_map_pin_letter&chld=D|FFFF00|000000',
-    //       title: place.name,
-    //       position: place.geometry.location
-    //     });
-    // }
+    var matrixService = new google.maps.DistanceMatrixService();
+    matrixService.getDistanceMatrix(
+      {
+        origins: donutOrigins,
+        destinations: [clickTime],
+        travelMode: google.maps.TravelMode.WALKING,
+      }, getClosestDonuts);
   }
-  console.log("start DonutDistanceMatrixService");
-  var matrixService = new google.maps.DistanceMatrixService();
-  matrixService.getDistanceMatrix(
-    {
-      origins: donutOrigins,
-      destinations: [clickTime],
-      travelMode: google.maps.TravelMode.WALKING,
-    }, getClosestDonuts);
-
 }
 
 function getClosestCoffee(response, status) {
-  console.log("getClosestCoffee");
   if (status == google.maps.DistanceMatrixStatus.OK) {
     var origins = response.originAddresses;
     var minDistance = Infinity;
@@ -193,9 +166,9 @@ function getClosestCoffee(response, status) {
       }
     }
     if (closeCoffee != null) {
-      var infowindow = new google.maps.InfoWindow({
-        content: closeCoffee.name
-      });
+      // var infowindow = new google.maps.InfoWindow({
+      //   content: closeCoffee.name
+      // });
       // var marker = new google.maps.Marker({
       //   map: map,
       //   title: closeCoffee.name,
@@ -204,14 +177,12 @@ function getClosestCoffee(response, status) {
       // marker.addListener('click', function() {
       //   infowindow.open(map, marker);
       // });
-      console.log(closeCoffee.name);
       coffeeLoc = closeCoffee;
     }
   }
 }
 
 function getClosestDonuts(response, status) {
-  console.log("getClosestDonuts");
   if (status == google.maps.DistanceMatrixStatus.OK) {
     var origins = response.originAddresses;
     var minDistance = Infinity;
@@ -241,16 +212,13 @@ function getClosestDonuts(response, status) {
       // marker.addListener('click', function() {
       //   infowindow.open(map, marker);
       // });
-      console.log(closeDonut.name);
       donutLoc = closeDonut;
     }
   }
 }
 
 function calculateAndDisplayRoute(directionsService, directionsDisplay) {
-  console.log("calculateAndDisplayRoute");
   var selectedMode = document.getElementById("travel-mode").value
-  console.log(coffeeLoc, donutLoc);
   var waypts = [{
           location: coffeeLoc.geometry.location,
           stopover: true
@@ -266,6 +234,7 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
     travelMode: google.maps.TravelMode[selectedMode]
   }, function(response, status) {
     if (status === google.maps.DirectionsStatus.OK) {
+      getTripSummary();
       directionsDisplay.setDirections(response);
     } else {
       window.alert('Directions request failed due to ' + status);
@@ -274,9 +243,8 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay) {
 }
 
 function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
-  console.log("calculateAndDisplayTransitRoute");
   var selectedMode = document.getElementById("travel-mode").value
-  // ROUTE TO COFFEE
+  // Route to coffee
   directionsService.route({
     origin: currentPos,
     destination: coffeeLoc.geometry.location,
@@ -286,7 +254,7 @@ function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
       var currentTime = new Date();
       currentTime = currentTime.getTime();
       var duration = response.routes[0].legs[0].duration.value * 1000;
-      //routeToDonuts();
+      // Route to donuts
       directionsService.route({
         origin: coffeeLoc.geometry.location,
         destination: donutLoc.geometry.location,
@@ -299,7 +267,7 @@ function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
               currentTime = currentTime + duration;
               duration = response2.routes[0].legs[0].duration.value * 1000;
               response.routes[0].legs.push(response2.routes[0].legs[0]);
-              //routeToClickTime();
+              // Route to ClickTime
               directionsService.route({
                 origin: donutLoc.geometry.location,
                 destination: clickTime,
@@ -311,7 +279,6 @@ function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
                 if (status === google.maps.DirectionsStatus.OK) {
                   response.routes[0].legs.push(response3.routes[0].legs[0]);
                   directionsDisplay.setDirections(response);
-                  console.log(response3);
                 } else {
                   window.alert('Directions request failed due to ' + status);
                 }
@@ -326,56 +293,9 @@ function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
   });
 }
 
-function routeToDonuts() {
-  directionsService.route({
-    origin: coffeeLoc.geometry.location,
-    destination: donutLoc.geometry.location,
-    travelMode: google.maps.TravelMode[selectedMode],
-    transitOptions: {
-      departureTime: new Date(currentTime + duration)
-    }
-  }, function(response, status) {
-        if (status === google.maps.DirectionsStatus.OK) {
-          directionsDisplay.setDirections(response);
-          currentTime = currentTime + duration;
-          duration = response.routes[0].legs[0].duration.value;
-          routeToClickTime();
-        } else {
-          window.alert('Directions request failed due to ' + status);
-        }
-  });
+function getTripSummary() {
+  var summaryPanel = document.getElementById('directions-summary');
+  summaryPanel.innerHTML = '';
+  summaryPanel.innerHTML += '<b>Stop to get coffee at ' + coffeeLoc.name + '</b><br>Address: ' + coffeeLoc.formatted_address;
+  summaryPanel.innerHTML += '<br><b>Stop to get donuts at ' + donutLoc.name + '</b><br>Address: ' + donutLoc.formatted_address;
 }
-
-function routeToClickTime() {
-  directionsService.route({
-    origin: donutLoc.geometry.location,
-    destination: clickTime,
-    travelMode: google.maps.TravelMode[selectedMode],
-    transitOptions: {
-      departureTime: new Date(currentTime + duration)
-    }
-  }, function(response, status) {
-    if (status === google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setDirections(response);
-    } else {
-      window.alert('Directions request failed due to ' + status);
-    }
-  });
-}
-
-//$(document).ready(function() {
-//});
-
-// var onChangeHandler = function() {
-//   calculateAndDisplayRoute(directionsService, directionsDisplay);
-// };
-//document.getElementById('start').addEventListener('change', onChangeHandler);
-//document.getElementById('end').addEventListener('change', onChangeHandler);
-
-// var image = {
-//   url: place.icon,
-//   size: new google.maps.Size(71, 71),
-//   origin: new google.maps.Point(0, 0),
-//   anchor: new google.maps.Point(17, 34),
-//   scaledSize: new google.maps.Size(25, 25)
-// };

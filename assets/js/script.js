@@ -5,6 +5,8 @@ var coffeeLocations;
 var donutLocations;
 var coffeeLoc;
 var donutLoc;
+var coffeeAddr;
+var donutAddr;
 
 function initMap() {
   var directionsService = new google.maps.DirectionsService;
@@ -166,17 +168,6 @@ function getClosestCoffee(response, status) {
       }
     }
     if (closeCoffee != null) {
-      // var infowindow = new google.maps.InfoWindow({
-      //   content: closeCoffee.name
-      // });
-      // var marker = new google.maps.Marker({
-      //   map: map,
-      //   title: closeCoffee.name,
-      //   position: closeCoffee.geometry.location
-      // });
-      // marker.addListener('click', function() {
-      //   infowindow.open(map, marker);
-      // });
       coffeeLoc = closeCoffee;
     }
   }
@@ -201,17 +192,6 @@ function getClosestDonuts(response, status) {
       }
     }
     if (closeDonut != null) {
-      var infowindow = new google.maps.InfoWindow({
-        content: closeDonut.name
-      });
-      // var marker = new google.maps.Marker({
-      //   map: map,
-      //   title: closeDonut.name,
-      //   position: closeDonut.geometry.location
-      // });
-      // marker.addListener('click', function() {
-      //   infowindow.open(map, marker);
-      // });
       donutLoc = closeDonut;
     }
   }
@@ -278,6 +258,7 @@ function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
               }, function(response3, status) {
                 if (status === google.maps.DirectionsStatus.OK) {
                   response.routes[0].legs.push(response3.routes[0].legs[0]);
+                  getTripSummary();
                   directionsDisplay.setDirections(response);
                 } else {
                   window.alert('Directions request failed due to ' + status);
@@ -296,6 +277,6 @@ function calculateAndDisplayTransitRoute(directionsService, directionsDisplay) {
 function getTripSummary() {
   var summaryPanel = document.getElementById('directions-summary');
   summaryPanel.innerHTML = '';
-  summaryPanel.innerHTML += '<b>Stop to get coffee at ' + coffeeLoc.name + '</b><br>Address: ' + coffeeLoc.formatted_address;
-  summaryPanel.innerHTML += '<br><b>Stop to get donuts at ' + donutLoc.name + '</b><br>Address: ' + donutLoc.formatted_address;
+  summaryPanel.innerHTML += 'Stop to get coffee at:<b> ' + coffeeLoc.name;
+  summaryPanel.innerHTML += '<br>Stop to get donuts at:<b> ' + donutLoc.name;
 }
